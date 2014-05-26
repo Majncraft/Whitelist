@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Enumeration;
 
+import org.bukkit.Bukkit;
+
 public class SQLConnection
 {
   //Attributes
@@ -104,7 +106,9 @@ public class SQLConnection
         return false;
       }
       Statement stmt = m_Connection.createStatement();
-      ResultSet rst = stmt.executeQuery(m_strQuery.replace("<%USERNAME%>", playerName));
+      @SuppressWarnings("deprecation")
+		String uuid=Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
+      ResultSet rst = stmt.executeQuery(m_strQuery.replace("<%USERNAME%>", playerName).replace("<%UUID%>", uuid));
       if ( rst.first() )
         return true;
       else
@@ -140,7 +144,9 @@ public class SQLConnection
         if ( m_Connection == null )
           m_Connection = DriverManager.getConnection(m_strConnection);
         Statement stmt = m_Connection.createStatement();
-        stmt.execute(m_strQueryAdd.replace("<%USERNAME%>", playerName));
+        @SuppressWarnings("deprecation")
+		String uuid=Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
+        stmt.execute(m_strQueryAdd.replace("<%USERNAME%>", playerName).replace("<%UUID%>", uuid));
         return true;
       }
       catch (SQLException ex)
@@ -174,7 +180,9 @@ public class SQLConnection
         if ( m_Connection == null )
           m_Connection = DriverManager.getConnection(m_strConnection);
         Statement stmt = m_Connection.createStatement();
-        stmt.execute(m_strQueryRemove.replace("<%USERNAME%>", playerName));
+        @SuppressWarnings("deprecation")
+		String uuid=Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
+        stmt.execute(m_strQueryRemove.replace("<%USERNAME%>", playerName).replace("<%UUID%>", uuid));
         return true;
       }
       catch (SQLException ex)
