@@ -15,20 +15,16 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.logging.Logger;
 
-import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Whitelist extends JavaPlugin {
 
-    private static Permission perms;
     private static Logger log = Logger.getLogger("Minecraft");
     private final String name = "[Whitelist]";
 
@@ -143,11 +139,8 @@ public class Whitelist extends JavaPlugin {
     }
 
     private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            perms = permissionProvider.getProvider();
-        }
-        return (perms != null);
+    	//TODO: remove
+        return true;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -284,10 +277,8 @@ public class Whitelist extends JavaPlugin {
     }
 
     private boolean hasPerm(CommandSender sender, String permission) {
-        if (sender instanceof Player) {
-            return perms.has((Player) sender, permission);
-        }
-        return true;
+    	//TODO: rework
+    	return sender.hasPermission(permission);
     }
     public boolean saveWhitelist() {
         try {
