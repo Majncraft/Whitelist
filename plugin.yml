@@ -1,7 +1,6 @@
 name: Whitelist
 main: com.bitzcraftonline.whitelist.Whitelist
-version: 1.1.1.0000b
-depend: [Vault]
+version: 1.1.2.1a
 commands:
   whitelist help:
       description: Base command for whitelist.
