@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bitzcraftonline.whitelist</groupId>
 	<artifactId>Whitelist</artifactId>
-	<version>1.2.0</version>
+	<version>1.1.2.1a</version>
 	<name>Whitelist</name>
 
 	<repositories>
