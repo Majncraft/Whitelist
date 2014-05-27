@@ -1,0 +1,14 @@
+name: ${project.name}
+version: ${project.version}
+main: com.bitzcraftonline.whitelist.Whitelist
+commands:
+  whitelist help:
+      description: Base command for whitelist.
+permissions:
+  whitelist.*:
+    description: Gives the user permission for all whitelist commands
+    children:
+      whitelist.admin: true
+      whitelist.add: true
+      whitelist.remove: true
+      whitelist.list: true
