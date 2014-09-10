@@ -36,6 +36,8 @@ public class Whitelist extends JavaPlugin {
     private final String PROP_SQL_DRIVER_JAR = "sql-driver-jar";
     private final String PROP_SQL_DRIVER = "sql-driver";
     private final String PROP_SQL_CONNECTION = "sql-driver-connection";
+    private final String PROP_SQL_USERNAME = "sql-username";
+    private final String PROP_SQL_PASSWORD = "sql-password";
     private final String PROP_SQL_QUERY = "sql-query";
     private final String PROP_SQL_QUERY_ADD = "sql-query-add";
     private final String PROP_SQL_QUERY_REMOVE = "sql-query-remove";
@@ -62,6 +64,8 @@ public class Whitelist extends JavaPlugin {
     private String m_strSettingsSqlQuery;
     private String m_strSettingsSqlQueryAdd;
     private String m_strSettingsSqlQueryRemove;
+    private String m_strSettingsSqlUsername;
+    private String m_strSettingsSqlPassword;
 
     public void onEnable() {
         m_Folder = getDataFolder();
@@ -119,9 +123,20 @@ public class Whitelist extends JavaPlugin {
                 propConfig.setProperty(PROP_KICKMESSAGE, "Sorry, you are not on the whitelist!");
                 propConfig.setProperty(PROP_WHITELIST_ADMINS, "Name1,Name2,Name3");
                 propConfig.setProperty(PROP_DISABLE_LIST, "false");
+                propConfig.setProperty(PROP_USE_SQL, "false");
+                propConfig.setProperty(PROP_SQL_DRIVER_JAR, "");
+                propConfig.setProperty(PROP_SQL_DRIVER, "com.mysql.jdbc.Driver");
+                propConfig.setProperty(PROP_SQL_CONNECTION, "jdbc:mysql://localhost:3306/database");
+                propConfig.setProperty(PROP_SQL_USERNAME, "root");
+                propConfig.setProperty(PROP_SQL_PASSWORD, "pass");
+                propConfig.setProperty(PROP_SQL_QUERY, "SELECT * FROM whitelist WHERE name = '<%USERNAME%>' OR uuid = '<%UUID%>' ");
+                propConfig.setProperty(PROP_SQL_QUERY_ADD, "INSERT INTO whitelist (name,uuid) VALUES ('<%USERNAME%>','<%UUID%>')");
+                propConfig.setProperty(PROP_SQL_QUERY_REMOVE, "DELETE FROM whitelist WHERE name = '<%USERNAME%>' OR uuid = '<%UUID%>' ");
 
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(fConfig.getAbsolutePath()));
                 propConfig.store(stream, "Auto generated config file, please modify");
+                propConfig.store(stream, "Username replacment: <%USERNAME%>");
+                propConfig.store(stream, "UUID replacment: <%UUID%>");
             } catch (IOException ex) {
             }
         }
@@ -259,8 +274,16 @@ public class Whitelist extends JavaPlugin {
                 m_strSettingsSqlQueryRemove = "";
             }
             m_strSettingsSqlDriverJar = propConfig.getProperty(PROP_SQL_DRIVER_JAR);
+            m_strSettingsSqlUsername = propConfig.getProperty(PROP_SQL_USERNAME);
+            if (m_strSettingsSqlUsername == null) {
+                m_strSettingsSqlUsername = "";
+            }
+            m_strSettingsSqlPassword = propConfig.getProperty(PROP_SQL_PASSWORD);
+            if (m_strSettingsSqlPassword == null) {
+                m_strSettingsSqlPassword = "";
+            }
             if ( m_bSettingsSqlEnabled ) {
-                m_SqlConnection = new SQLConnection(m_strSettingsSqlDriver, m_strSettingsSqlConnection, m_strSettingsSqlQuery, m_strSettingsSqlQueryAdd, m_strSettingsSqlQueryRemove, m_strSettingsSqlDriverJar);
+                m_SqlConnection = new SQLConnection(m_strSettingsSqlDriver, m_strSettingsSqlConnection, m_strSettingsSqlQuery, m_strSettingsSqlQueryAdd, m_strSettingsSqlQueryRemove, m_strSettingsSqlDriverJar,m_strSettingsSqlUsername,m_strSettingsSqlPassword);
             } else {
                 if ( m_SqlConnection != null )
                     m_SqlConnection.Cleanup();
