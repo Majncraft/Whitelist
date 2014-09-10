@@ -135,8 +135,6 @@ public class Whitelist extends JavaPlugin {
 
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(fConfig.getAbsolutePath()));
                 propConfig.store(stream, "Auto generated config file, please modify");
-                propConfig.store(stream, "Username replacment: <%USERNAME%>");
-                propConfig.store(stream, "UUID replacment: <%UUID%>");
             } catch (IOException ex) {
             }
         }
