@@ -23,7 +23,7 @@ public class SQLConnection
   Connection m_Connection;
   Driver m_ProxyDriver;
 
-  public SQLConnection(String strDriver, String strConnection, String strQuery, String strQueryAdd, String strQueryRemove, String strDriverPath) throws Exception
+  public SQLConnection(String strDriver, String strConnection, String strQuery, String strQueryAdd, String strQueryRemove, String strDriverPath,String strUsername, String strPassword) throws Exception
   {
     m_strQuery = strQuery;
     m_strQueryAdd = strQueryAdd;
@@ -59,7 +59,7 @@ public class SQLConnection
           Class.forName(strDriver).newInstance();
         }
       }
-      m_Connection = DriverManager.getConnection(strConnection);
+      m_Connection = DriverManager.getConnection(strConnection,strUsername,strPassword);
 
     }
     catch (SQLException ex)
