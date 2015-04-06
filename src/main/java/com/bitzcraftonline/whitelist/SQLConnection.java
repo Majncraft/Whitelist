@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.Enumeration;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class SQLConnection
 {
@@ -92,23 +93,16 @@ public class SQLConnection
     }
   }
 
-  public boolean isOnWhitelist(String playerName, boolean bRetry)
+  public boolean isOnWhitelist(Player player, boolean bRetry)
   {
     try
     {
       if ( m_Connection == null )
         m_Connection = DriverManager.getConnection(m_strConnection);
 
-      //Valid characters in a players' name: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ (according to minecraft.net)
-      if ( !playerName.matches("[a-zA-Z0-9_]*") )
-      {
-        System.out.println("Whitelist: Illegal characters in player name, disallow!" );
-        return false;
-      }
+      
       Statement stmt = m_Connection.createStatement();
-      @SuppressWarnings("deprecation")
-		String uuid=Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
-      ResultSet rst = stmt.executeQuery(m_strQuery.replace("<%USERNAME%>", playerName).replace("<%UUID%>", uuid));
+      ResultSet rst = stmt.executeQuery(m_strQuery.replace("<%USERNAME%>", player.getName()).replace("<%UUID%>", player.getUniqueId().toString()));
       if ( rst.first() )
         return true;
       else
@@ -119,7 +113,7 @@ public class SQLConnection
       m_Connection = null;
       if ( bRetry )
       {
-        return isOnWhitelist(playerName, false);
+        return isOnWhitelist(player, false);
       }
       else
       {
@@ -135,7 +129,7 @@ public class SQLConnection
     return false;
   }
 
-  public boolean addPlayerToWhitelist(String playerName, boolean bRetry)
+  public boolean addPlayerToWhitelist(Player player, boolean bRetry)
   {
     if ( m_strQueryAdd != null && !m_strQueryAdd.isEmpty() )
     {
@@ -144,9 +138,7 @@ public class SQLConnection
         if ( m_Connection == null )
           m_Connection = DriverManager.getConnection(m_strConnection);
         Statement stmt = m_Connection.createStatement();
-        @SuppressWarnings("deprecation")
-		String uuid=Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
-        stmt.execute(m_strQueryAdd.replace("<%USERNAME%>", playerName).replace("<%UUID%>", uuid));
+        stmt.execute(m_strQueryAdd.replace("<%USERNAME%>", player.getName()).replace("<%UUID%>", player.getUniqueId().toString()));
         return true;
       }
       catch (SQLException ex)
@@ -154,7 +146,7 @@ public class SQLConnection
         m_Connection = null;
         if ( bRetry )
         {
-          return addPlayerToWhitelist(playerName, false);
+          return addPlayerToWhitelist(player, false);
         }
         else
         {
@@ -171,7 +163,7 @@ public class SQLConnection
     return false;
   }
 
-  public boolean removePlayerFromWhitelist(String playerName, boolean bRetry)
+  public boolean removePlayerFromWhitelist(Player player, boolean bRetry)
   {
     if ( m_strQueryRemove != null && !m_strQueryRemove.isEmpty() )
     {
@@ -180,9 +172,7 @@ public class SQLConnection
         if ( m_Connection == null )
           m_Connection = DriverManager.getConnection(m_strConnection);
         Statement stmt = m_Connection.createStatement();
-        @SuppressWarnings("deprecation")
-		String uuid=Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
-        stmt.execute(m_strQueryRemove.replace("<%USERNAME%>", playerName).replace("<%UUID%>", uuid));
+        stmt.execute(m_strQueryRemove.replace("<%USERNAME%>", player.getName()).replace("<%UUID%>", player.getUniqueId().toString()));
         return true;
       }
       catch (SQLException ex)
@@ -190,7 +180,7 @@ public class SQLConnection
         m_Connection = null;
         if ( bRetry )
         {
-          return removePlayerFromWhitelist(playerName, false);
+          return removePlayerFromWhitelist(player, false);
         }
         else
         {

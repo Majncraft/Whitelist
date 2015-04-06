@@ -1,5 +1,6 @@
 package com.bitzcraftonline.whitelist;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,9 +24,9 @@ public class WLPlayerListener implements Listener
 				plugin.resetNeedReloadWhitelist();
 			}
 
-			String playerName = event.getPlayer().getName();
-			System.out.print("Whitelist: Player " + playerName + " is trying to join...");
-			if ( plugin.isOnWhitelist(playerName) ) {
+			Player player = event.getPlayer();
+			System.out.print("Whitelist: Player " + player.getDisplayName() + " is trying to join...");
+			if ( plugin.isOnWhitelist(player) ) {
 				System.out.println("allow!");
 			} else {
 				System.out.println("kick!");

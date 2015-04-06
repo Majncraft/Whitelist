@@ -13,15 +13,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Timer;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 
+
+
+
+
+
+
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.common.base.Charsets;
 
 public class Whitelist extends JavaPlugin {
 
@@ -316,26 +330,38 @@ public class Whitelist extends JavaPlugin {
         return true;
     }
 
-    public boolean isOnWhitelist(String playerName) {
+    public boolean isOnWhitelist(Player player) {
         if ( m_bSettingsSqlEnabled && m_SqlConnection != null ) {
-            return m_SqlConnection.isOnWhitelist(playerName, true);
+            return m_SqlConnection.isOnWhitelist(player, true);
         } else {
-            for (String player : m_SettingsWhitelistAllow) {
-                if (player.compareToIgnoreCase(playerName) == 0) {
+            for (String pl : m_SettingsWhitelistAllow) {
+                if (pl.compareToIgnoreCase(player.getName()) == 0) {
                     return true;
                 }
             }
         }
         return false;
     }
-
+    private UUID getUUID(String username)
+    {
+      return (Bukkit.getOfflinePlayer(username)==null)?null:Bukkit.getOfflinePlayer(username).getUniqueId();
+    }
     public boolean addPlayerToWhitelist(String playerName) {
+    	
+    	//Valid characters in a players' name: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ (according to minecraft.net)
+        if ( !playerName.matches("[a-zA-Z0-9_]*") )
+        {
+          System.out.println("Whitelist: Illegal characters in player name, disallow!" );
+          return false;
+        }
+        if(getUUID(playerName)==null)return false;
+        OfflinePlayer p=Bukkit.getOfflinePlayer(getUUID(playerName));
         if ( m_SqlConnection != null ) { //SQL mode
-            if ( !isOnWhitelist(playerName) ) {
-                return m_SqlConnection.addPlayerToWhitelist(playerName, true);
+            if ( !isOnWhitelist(p.getPlayer()) ) {
+                return m_SqlConnection.addPlayerToWhitelist(p.getPlayer(), true);
             }
         } else { //whitelist.txt mode
-            if (!isOnWhitelist(playerName)) {
+            if (!isOnWhitelist(p.getPlayer())) {
                 m_SettingsWhitelistAllow.add(playerName);
                 return saveWhitelist();
             }
@@ -344,9 +370,17 @@ public class Whitelist extends JavaPlugin {
     }
 
     public boolean removePlayerFromWhitelist(String playerName) {
+    	//Valid characters in a players' name: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ (according to minecraft.net)
+        if ( !playerName.matches("[a-zA-Z0-9_]*") )
+        {
+          System.out.println("Whitelist: Illegal characters in player name, disallow!" );
+          return false;
+        }
+        if(getUUID(playerName)==null)return false;
+        OfflinePlayer p=Bukkit.getOfflinePlayer(getUUID(playerName));
         if ( m_SqlConnection != null ) { //SQL mode
-            if ( isOnWhitelist(playerName) ) {
-                return m_SqlConnection.removePlayerFromWhitelist(playerName, true);
+            if ( isOnWhitelist(p.getPlayer()) ) {
+                return m_SqlConnection.removePlayerFromWhitelist(p.getPlayer(), true);
             }
         }
         else { //whitelist.txt mode
